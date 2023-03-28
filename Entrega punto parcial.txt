@@ -1,3 +1,6 @@
 Entrega punto parcial
-Brandon Celeita 
-20192578144
+Autor : Brandon Celeita
+Cod: 20192578144
+Materia: Redes Inalambricas
+Profesor: Marlon Patiño
+Tec. Sistematizacion de datos

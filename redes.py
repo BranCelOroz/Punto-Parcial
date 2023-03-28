@@ -1,18 +1,41 @@
+"""
+Autor : Brandon Celeita
+Cod: 20192578144
+Materia: Redes Inalambricas
+Profesor: Marlon Patiño
+Tec. Sistematizacion de datos
+"""
+
 import sys
 import math
 from math import log10
 import numpy as np
 import matplotlib.pyplot as plt
 
-def W2dBm(mW):
-    return 10.*math.log10(mW)+30
+def convertidor_potencia(unidad,potencia):
+    if unidad =="mW":
+        return  10.*log10(potencia)        
+    elif unidad == "W":
+        return 10.*math.log10(potencia)+30
+    elif unidad == "dBw":
+        return potencia+30
 
-def mW2dBm(mW):
-    return 10.*log10(mW)
 
-def dBw2dBm(dBw):
-    return dBw+30
+def convertidor_frecuencia(unidad,frecuencia):
+    if unidad =="Ghz":
+        return  frecuencia*1000    
+    elif unidad == "Hz":
+        return frecuencia/1000000
+    elif unidad == "Khz":
+        return frecuencia/1000
+    
+def convertidor_distancia(unidad,distancia):
+    if unidad =="Mm":
+        return  distancia*1000    
+    elif unidad == "m":
+        return distancia/1000
 
+    
 def PIRE(conversion, ampli , perdida, ant):
     pire = (conversion +ampli + ant) -perdida
     return pire
@@ -50,39 +73,58 @@ amplificador= float(input("ingrese el valor del amplificador: "))
 perdida= float(input("ingrese el valor de perdida por el cable: "))
 antena= float(input("ingrese el valor de la antena: "))
 potencia = float(input('inserte el valor de la potencia: '))
-valor= input("el valor se encuentra en dBM,\n 1.si \n 2.no \n seleccione una opcion: ")
+valor_potencia= input("el valor se encuentra en dBM,\n 1.si \n 2.no \n seleccione una opcion: ")
 
-if valor == "no":
-    valor=input("en que unidad esta el valor: \n 1.mW \n 2.W \n 3.dBw \n ingrese la opcion para realizar la conversion: ")
-    if valor =="mW":
-        conversion= mW2dBm(potencia)
-        print("el valor convertido de mW a dBm es: "+ str(conversion))
-    elif valor == "W":
-         conversion = W2dBm(potencia)
-         print("el valor convertido de W a dBm es: "+ str(conversion))
-    elif valor == "dBw":
-         conversion = dBw2dBm(potencia)
-         print("el valor convertido de dBw a dBm es: "+ str(conversion))
+if valor_potencia == "no":
+    unidad_potencia=input("en que unidad esta el valor: \n 1.mW \n 2.W \n 3.dBw \n ingrese la opcion para realizar la conversion: ")
+    conversion_potencia=convertidor_potencia(unidad_potencia, potencia)
+    print("el valor convertido a dBm es: "+ str(conversion_potencia))
 else:
-    conversion=potencia
+    conversion_potencia=potencia
          
     
-pire = PIRE(conversion, amplificador, perdida, antena)
+pire = PIRE(conversion_potencia, amplificador, perdida, antena)
 print("La Potencia Isotropa Radiada Efectiva es: "+ str(pire))
 
 print("-------------- Generando Grafica de espectro -----------")
-frecuencia = float(input(' inserte el valor de la frecuencia (Mhz): '))
-bw=float(input("ingrese el ancho de banda (Mhz): "))
+frecuencia = float(input(' inserte el valor de la frecuencia: '))
+valor_frecuencia= input("el valor se encuentra en Mhz,\n 1.si \n 2.no \n seleccione una opcion: ")
 
-GraficaEspectro(frecuencia, pire, bw)
+if valor_frecuencia == "no":
+    unidad_frecuencia=input("en que unidad esta el valor: \n 1.Ghz \n 2.Hz \n 3.Khz \n ingrese la opcion para realizar la conversion: ")
+    conversion_frecuencia=convertidor_frecuencia(unidad_frecuencia, frecuencia)
+    print("el valor convertido a Mhz es: "+ str(conversion_frecuencia))
+else:
+    conversion_frecuencia=frecuencia
+         
+bw=float(input("ingrese el ancho de banda: "))
+valor_bw= input("el valor se encuentra en Mhz,\n 1.si \n 2.no \n seleccione una opcion: ")
+
+if valor_bw == "no":
+    unidad_bw=input("en que unidad esta el valor: \n 1.Ghz \n 2.Hz \n 3.Khz \n ingrese la opcion para realizar la conversion: ")
+    conversion_bw=convertidor_frecuencia(unidad_bw, bw)
+    print("el valor convertido a Mhz es: "+ str(conversion_bw))
+else:
+    conversion_bw=bw
+
+GraficaEspectro(conversion_frecuencia, pire, conversion_bw)
 
 print("-------------- Hallando P.E.L y verficando enlace -------------")
 
 th= float(input("ingrese el valor del umbral de recepcion: "))
 Md= float(input("ingrese el valor del margen de desvanecimiento: "))
-distancia= float(input("ingrese el valor de la distancia (kilometros): "))
+distancia= float(input("ingrese el valor de la distancia: "))
+valor_distancia= input("el valor se encuentra en Km,\n 1.si \n 2.no \n seleccione una opcion: ")
+
+if valor_distancia == "no":
+    unidad_distancia=input("en que unidad esta el valor: \n 1.Mm\n 2.m \n ingrese la opcion para realizar la conversion: ")
+    conversion_distancia=convertidor_distancia(unidad_distancia, distancia)
+    print("el valor convertido a Km es: "+ str(conversion_distancia))
+else:
+    conversion_distancia=distancia
+    
 ant_recep= float(input("ingrese el valor de la antena del receptor: "))
-perdida_esp_lib=Pel(frecuencia, distancia)
+perdida_esp_lib=Pel(conversion_frecuencia, conversion_distancia)
 enlace=HallaEnlace(pire, th, ant_recep,Md)
 ganancia=perdida_esp_lib-enlace
 
